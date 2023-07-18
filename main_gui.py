@@ -1,6 +1,7 @@
 import pygame
 import sys
 from class_button import Button
+from history_ui import show_history
 
 pygame.init()
 
@@ -11,6 +12,7 @@ INTERFACE_BACKGROUND = (255, 255, 255)
 NOIR = (0, 0, 0)
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 pygame.display.set_caption("Main GUI")
+
 
 # Texts
 font = pygame.font.SysFont(None, 36)
@@ -38,12 +40,20 @@ living_room_light_state = Button(175, 125, 40, 65, "OFF", (255, 255, 255), (255,
 
 kitchen_light_state = Button(175, 210, 40, 65, "OFF", (255, 255, 255), (255, 0, 0))
 
+# Controllers
+show_history_window = False
+
 
 def start_gui():
+    global show_history_window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit(0)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
+            if history_button.isOverButton((mouse_x_pos, mouse_y_pos)):
+                show_history_window = True
 
     screen.fill(INTERFACE_BACKGROUND)
 
