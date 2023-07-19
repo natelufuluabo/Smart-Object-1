@@ -13,7 +13,6 @@ def terminer(signum, frame):
 
 
 def on_message(client, userdata, message):
-    print("received message: ", str(message.payload.decode("utf-8")))
     commande = str(message.payload.decode("utf-8"))
     
     if commande == "alarm_on":

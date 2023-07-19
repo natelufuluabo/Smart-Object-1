@@ -5,8 +5,19 @@ import paho.mqtt.client as mqtt
 
 def on_message(client, userdata, message):
     message_received = str(message.payload.decode("utf-8"))
-    print("received message: ", message_received)
-
+    
+    if message_received == "alarm_on":
+        alarm_state.config(text="armed", bg="red")
+    elif message_received == "alarm_off":
+        alarm_state.config(text="Disarmed", bg="green")
+    elif message_received == "living_room_on": 
+        living_room_light_state.config(text="ON", bg="yellow")
+    elif message_received == "living_room_off": 
+        living_room_light_state.config(text="OFF", bg="red")
+    elif message_received == "kitchen_on":
+        kitchen_light_state.config(text="ON", bg="yellow")
+    elif message_received == "kitchen_off":
+        kitchen_light_state.config(text="OFF", bg="red")
 
 # MQTT
 
@@ -29,40 +40,22 @@ client.on_message = on_message
 
 def on_alarm_on():
     client.publish("Nathan/Etats", "alarm_on")
-    print("Message published, alarm_on")
-    # alarm_state.config(text="Armed", bg="green")
-
-
+    
 def on_alarm_off():
     client.publish("Nathan/Etats", "alarm_off")
-    print("Message published, alarm_off")
-    # alarm_state.config(text="Disarmed", bg="red")
-
 
 def on_living_room_on():
     client.publish("Nathan/Etats", "living_room_on")
-    print("Message published, living_room_on")
-    # living_room_light_state.config(text="ON", bg="yellow")
-
 
 def on_living_room_off():
     client.publish("Nathan/Etats", "living_room_off")
-    print("Message published, living_room_off")
-    # living_room_light_state.config(text="OFF", bg="red")
-
-
+   
 def on_kitchen_on():
     client.publish("Nathan/Etats", "kitchen_on")
-    print("Message published, kitchen_on")
-    # kitchen_light_state.config(text="ON", bg="yellow")
-
-
+    
 def on_kitchen_off():
     client.publish("Nathan/Etats", "kitchen_off")
-    print("Message published, kitchen_off")
-    # kitchen_light_state.config(text="OFF", bg="red")
-
-
+    
 def on_show_history():
     # Create a new window for the history
     history_window = tk.Toplevel(root)
@@ -95,7 +88,7 @@ def on_show_history():
 # Create the main window
 root = tk.Tk()
 root.title("Main GUI")
-root.geometry("350x350")
+root.geometry("350x400")
 
 # Texts
 font = ("Helvetica", 18)
