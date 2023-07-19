@@ -1,29 +1,66 @@
 import tkinter as tk
 from tkinter import ttk
+import paho.mqtt.client as mqtt
+
+
+def on_message(client, userdata, message):
+    message_received = str(message.payload.decode("utf-8"))
+    print("received message: ", message_received)
+
+
+# MQTT
+
+host = "node02.myqtthub.com"
+port = 1883
+clean_session = True
+client_id = "thermo"
+username = "natelufuluabo@yahoo.ca"
+password = "Kylian2021!!"
+
+client = mqtt.Client(client_id=client_id, clean_session=clean_session)
+client.username_pw_set(username, password)
+client.connect(host, port)
+
+client.loop_start()
+
+client.subscribe("Nathan/Etats")
+client.on_message = on_message
 
 
 def on_alarm_on():
-    alarm_state.config(text="Armed", bg="green")
+    client.publish("Nathan/Etats", "alarm_on")
+    print("Message published, alarm_on")
+    # alarm_state.config(text="Armed", bg="green")
 
 
 def on_alarm_off():
-    alarm_state.config(text="Disarmed", bg="red")
+    client.publish("Nathan/Etats", "alarm_off")
+    print("Message published, alarm_off")
+    # alarm_state.config(text="Disarmed", bg="red")
 
 
 def on_living_room_on():
-    living_room_light_state.config(text="ON", bg="yellow")
+    client.publish("Nathan/Etats", "living_room_on")
+    print("Message published, living_room_on")
+    # living_room_light_state.config(text="ON", bg="yellow")
 
 
 def on_living_room_off():
-    living_room_light_state.config(text="OFF", bg="red")
+    client.publish("Nathan/Etats", "living_room_off")
+    print("Message published, living_room_off")
+    # living_room_light_state.config(text="OFF", bg="red")
 
 
 def on_kitchen_on():
-    kitchen_light_state.config(text="ON", bg="yellow")
+    client.publish("Nathan/Etats", "kitchen_on")
+    print("Message published, kitchen_on")
+    # kitchen_light_state.config(text="ON", bg="yellow")
 
 
 def on_kitchen_off():
-    kitchen_light_state.config(text="OFF", bg="red")
+    client.publish("Nathan/Etats", "kitchen_off")
+    print("Message published, kitchen_off")
+    # kitchen_light_state.config(text="OFF", bg="red")
 
 
 def on_show_history():
