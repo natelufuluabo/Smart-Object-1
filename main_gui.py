@@ -1,84 +1,110 @@
-import pygame
-import sys
-from class_button import Button
-from history_ui import show_history
+import tkinter as tk
+from tkinter import ttk
 
-pygame.init()
 
-# GUI set up
-SCREEN_WIDTH = 300
-SCREEN_HEIGHT = 350
-INTERFACE_BACKGROUND = (255, 255, 255)
-NOIR = (0, 0, 0)
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-pygame.display.set_caption("Main GUI")
+def on_alarm_on():
+    alarm_state.config(text="Armed", bg="green")
 
+
+def on_alarm_off():
+    alarm_state.config(text="Disarmed", bg="red")
+
+
+def on_living_room_on():
+    living_room_light_state.config(text="ON", bg="yellow")
+
+
+def on_living_room_off():
+    living_room_light_state.config(text="OFF", bg="red")
+
+
+def on_kitchen_on():
+    kitchen_light_state.config(text="ON", bg="yellow")
+
+
+def on_kitchen_off():
+    kitchen_light_state.config(text="OFF", bg="red")
+
+
+def on_show_history():
+    # Create a new window for the history
+    history_window = tk.Toplevel(root)
+    history_window.title("History")
+    history_window.geometry("800x300")
+
+    # Create a Treeview widget to display the history entries
+    history_tree = ttk.Treeview(
+        history_window, columns=("Time", "Date", "Action"), show="headings"
+    )
+    history_tree.heading("Time", text="Time")
+    history_tree.heading("Date", text="Date")
+    history_tree.heading("Action", text="Action")
+
+    # Add some sample data to the Treeview
+    sample_data = [
+        ("12:30", "2023-07-19", "Armed"),
+        ("13:45", "2023-07-19", "Disarmed"),
+        ("14:10", "2023-07-19", "Light ON"),
+        ("14:25", "2023-07-19", "Light OFF"),
+    ]
+
+    for entry in sample_data:
+        history_tree.insert("", "end", values=entry)
+
+    # Add the Treeview to the window
+    history_tree.pack(fill=tk.BOTH, expand=True)
+
+
+# Create the main window
+root = tk.Tk()
+root.title("Main GUI")
+root.geometry("350x350")
 
 # Texts
-font = pygame.font.SysFont(None, 36)
-alarm = font.render("Alarm System", True, NOIR)
-living_room_light = font.render("Living Room Light", True, NOIR)
-kitchen_light = font.render("Kitchen Light", True, NOIR)
-history = font.render("History", True, NOIR)
+font = ("Helvetica", 18)
+alarm = tk.Label(root, text="Alarm System", font=font)
+living_room_light = tk.Label(root, text="Living Room Light", font=font)
+kitchen_light = tk.Label(root, text="Kitchen Light", font=font)
+history = tk.Label(root, text="History", font=font)
 
-#  Buttons
-alarm_on_button = Button(10, 40, 40, 65, "ON")
-alarm_off_button = Button(77, 40, 40, 65, "OFF")
+# Buttons
+alarm_on_button = tk.Button(root, text="ON", width=8, command=on_alarm_on)
+alarm_off_button = tk.Button(root, text="OFF", width=8, command=on_alarm_off)
 
-living_room_on_button = Button(10, 125, 40, 65, "ON")
-living_room_off_button = Button(77, 125, 40, 65, "OFF")
+living_room_on_button = tk.Button(root, text="ON", width=8, command=on_living_room_on)
+living_room_off_button = tk.Button(
+    root, text="OFF", width=8, command=on_living_room_off
+)
 
-kitchen_on_button = Button(10, 210, 40, 65, "ON")
-kitchen_off_button = Button(77, 210, 40, 65, "OFF")
+kitchen_on_button = tk.Button(root, text="ON", width=8, command=on_kitchen_on)
+kitchen_off_button = tk.Button(root, text="OFF", width=8, command=on_kitchen_off)
 
-history_button = Button(10, 295, 40, 100, "SHOW")
+history_button = tk.Button(root, text="SHOW", width=12, command=on_show_history)
 
 # State containers
-alarm_state = Button(175, 40, 40, 90, "Disarmed", (255, 255, 255), (255, 0, 0))
+alarm_state = tk.Label(root, text="Disarmed", bg="red", fg="white", font=font)
 
-living_room_light_state = Button(175, 125, 40, 65, "OFF", (255, 255, 255), (255, 0, 0))
+living_room_light_state = tk.Label(root, text="OFF", bg="red", fg="white", font=font)
 
-kitchen_light_state = Button(175, 210, 40, 65, "OFF", (255, 255, 255), (255, 0, 0))
+kitchen_light_state = tk.Label(root, text="OFF", bg="red", fg="white", font=font)
 
-# Controllers
-show_history_window = False
+# Place all widgets on the grid
+alarm.grid(row=0, column=0, padx=10, pady=10, columnspan=2)
+alarm_on_button.grid(row=1, column=0, padx=5, pady=5)
+alarm_off_button.grid(row=1, column=1, padx=5, pady=5)
+alarm_state.grid(row=1, column=2, padx=5, pady=5)
 
+living_room_light.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
+living_room_on_button.grid(row=3, column=0, padx=5, pady=5)
+living_room_off_button.grid(row=3, column=1, padx=5, pady=5)
+living_room_light_state.grid(row=3, column=2, padx=5, pady=5)
 
-def start_gui():
-    global show_history_window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit(0)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
-            if history_button.isOverButton((mouse_x_pos, mouse_y_pos)):
-                show_history_window = True
+kitchen_light.grid(row=4, column=0, padx=10, pady=10, columnspan=2)
+kitchen_on_button.grid(row=5, column=0, padx=5, pady=5)
+kitchen_off_button.grid(row=5, column=1, padx=5, pady=5)
+kitchen_light_state.grid(row=5, column=2, padx=5, pady=5)
 
-    screen.fill(INTERFACE_BACKGROUND)
+history.grid(row=6, column=0, padx=10, pady=10, columnspan=2)
+history_button.grid(row=7, column=0, padx=10, pady=10, columnspan=3)
 
-    screen.blit(alarm, (10, 10))
-    alarm_on_button.draw_button(screen)
-    alarm_off_button.draw_button(screen)
-    alarm_state.draw_button(screen)
-    pygame.draw.line(screen, NOIR, (10, 87), (290, 87), 2)
-
-    screen.blit(living_room_light, (10, 95))
-    living_room_on_button.draw_button(screen)
-    living_room_off_button.draw_button(screen)
-    living_room_light_state.draw_button(screen)
-    pygame.draw.line(screen, NOIR, (10, 172), (290, 172), 2)
-
-    screen.blit(kitchen_light, (10, 180))
-    kitchen_on_button.draw_button(screen)
-    kitchen_off_button.draw_button(screen)
-    kitchen_light_state.draw_button(screen)
-    pygame.draw.line(screen, NOIR, (10, 257), (290, 257), 2)
-
-    screen.blit(history, (10, 265))
-    history_button.draw_button(screen)
-    pygame.display.update()
-
-
-while True:
-    start_gui()
+root.mainloop()
