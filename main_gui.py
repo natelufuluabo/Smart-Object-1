@@ -7,7 +7,7 @@ def on_message(client, userdata, message):
     message_received = str(message.payload.decode("utf-8"))
     
     if message_received == "alarm_on":
-        alarm_state.config(text="armed", bg="red")
+        alarm_state.config(text="Armed", bg="red")
     elif message_received == "alarm_off":
         alarm_state.config(text="Disarmed", bg="green")
     elif message_received == "living_room_on": 
