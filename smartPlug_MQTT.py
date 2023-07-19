@@ -7,7 +7,9 @@ import signal
 
 def terminer(signum, frame):
     print("Terminer")
-    GPIO.output(18, GPIO.LOW)
+    GPIO.output(17, GPIO.LOW)
+    GPIO.output(27, GPIO.LOW)
+    GPIO.output(22, GPIO.LOW)
     GPIO.cleanup()
     sys.exit(0)
 
