@@ -1,23 +1,25 @@
 import tkinter as tk
 from tkinter import ttk
 import paho.mqtt.client as mqtt
+from db import add_action, get_records
 
 
 def on_message(client, userdata, message):
     message_received = str(message.payload.decode("utf-8"))
-    
+
     if message_received == "alarm_on":
         alarm_state.config(text="Armed", bg="red")
     elif message_received == "alarm_off":
         alarm_state.config(text="Disarmed", bg="green")
-    elif message_received == "living_room_on": 
+    elif message_received == "living_room_on":
         living_room_light_state.config(text="ON", bg="yellow")
-    elif message_received == "living_room_off": 
+    elif message_received == "living_room_off":
         living_room_light_state.config(text="OFF", bg="red")
     elif message_received == "kitchen_on":
         kitchen_light_state.config(text="ON", bg="yellow")
     elif message_received == "kitchen_off":
         kitchen_light_state.config(text="OFF", bg="red")
+
 
 # MQTT
 
@@ -40,22 +42,34 @@ client.on_message = on_message
 
 def on_alarm_on():
     client.publish("Nathan/Etats", "alarm_on")
-    
+    add_action("Alarm System Armed")
+
+
 def on_alarm_off():
     client.publish("Nathan/Etats", "alarm_off")
+    add_action("Alarm System Disarmed")
+
 
 def on_living_room_on():
     client.publish("Nathan/Etats", "living_room_on")
+    add_action("Living room lights on")
+
 
 def on_living_room_off():
     client.publish("Nathan/Etats", "living_room_off")
-   
+    add_action("Living room lights off")
+
+
 def on_kitchen_on():
     client.publish("Nathan/Etats", "kitchen_on")
-    
+    add_action("Kitchen lights on")
+
+
 def on_kitchen_off():
     client.publish("Nathan/Etats", "kitchen_off")
-    
+    add_action("Kitchen lights off")
+
+
 def on_show_history():
     # Create a new window for the history
     history_window = tk.Toplevel(root)
@@ -70,15 +84,16 @@ def on_show_history():
     history_tree.heading("Date", text="Date")
     history_tree.heading("Action", text="Action")
 
-    # Add some sample data to the Treeview
-    sample_data = [
-        ("12:30", "2023-07-19", "Armed"),
-        ("13:45", "2023-07-19", "Disarmed"),
-        ("14:10", "2023-07-19", "Light ON"),
-        ("14:25", "2023-07-19", "Light OFF"),
-    ]
+    # Get data from DB
+    datas = get_records()
 
-    for entry in sample_data:
+    # Clean up data for usage
+    organized_data = []
+    for data in datas:
+        organized_data.append((data["time"], data["date"], data["action"]))
+
+    # Add data to the Treeview
+    for entry in organized_data:
         history_tree.insert("", "end", values=entry)
 
     # Add the Treeview to the window
