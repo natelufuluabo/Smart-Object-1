@@ -2,6 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 import paho.mqtt.client as mqtt
 from db import add_action, get_records
+from time import sleep
+
+# Create the main window
+root = tk.Tk()
+root.title("Main GUI")
+root.geometry("350x400")
 
 
 def on_message(client, userdata, message):
@@ -41,56 +47,81 @@ client.on_message = on_message
 
 
 def on_alarm_on():
+    global history_tree
     client.publish("Nathan/Etats", "alarm_on")
     add_action("Alarm System Armed")
+    update_history_window(history_tree)
 
 
 def on_alarm_off():
+    global history_tree
     client.publish("Nathan/Etats", "alarm_off")
-    add_action("Alarm System Disarmed")
+    add_action("Alarm System Disarmed") 
+    update_history_window(history_tree)
 
 
 def on_living_room_on():
+    global history_tree
     client.publish("Nathan/Etats", "living_room_on")
-    add_action("Living room lights on")
+    add_action("Living room lights on") 
+    update_history_window(history_tree)
 
 
 def on_living_room_off():
+    global history_tree
     client.publish("Nathan/Etats", "living_room_off")
-    add_action("Living room lights off")
+    add_action("Living room lights off") 
+    update_history_window(history_tree)
 
 
 def on_kitchen_on():
+    global history_tree
     client.publish("Nathan/Etats", "kitchen_on")
-    add_action("Kitchen lights on")
+    add_action("Kitchen lights on") 
+    update_history_window(history_tree)
 
 
 def on_kitchen_off():
+    global history_tree
     client.publish("Nathan/Etats", "kitchen_off")
-    add_action("Kitchen lights off")
+    add_action("Kitchen lights off") 
+    update_history_window(history_tree)
 
+history_window = tk.Toplevel(root)
+history_window.title("History")
+history_window.geometry("800x300")
+history_window.iconify()
 
-def on_show_history():
-    # Create a new window for the history
-    history_window = tk.Toplevel(root)
-    history_window.title("History")
-    history_window.geometry("800x300")
-
-    # Create a Treeview widget to display the history entries
-    history_tree = ttk.Treeview(
+# Create a Treeview widget to display the history entries
+history_tree = ttk.Treeview(
         history_window, columns=("Time", "Date", "Action"), show="headings"
     )
-    history_tree.heading("Time", text="Time")
-    history_tree.heading("Date", text="Date")
-    history_tree.heading("Action", text="Action")
+   
+history_tree.heading("Time", text="Time")
+history_tree.heading("Date", text="Date")
+history_tree.heading("Action", text="Action")
 
+
+def create_history_window():
+    global history_window
+    history_window.deiconify()
+    global history_tree
+    update_history_window(history_tree)
+    
+def update_history_window(history_tree):
     # Get data from DB
     datas = get_records()
 
     # Clean up data for usage
     organized_data = []
     for data in datas:
-        organized_data.append((data["time"], data["date"], data["action"]))
+        if data in organized_data:
+            continue
+        else:
+            organized_data.append((data["time"], data["date"], data["action"]))
+    
+    # Remove all element before updating to avoid duplicate
+    history_tree.delete(*history_tree.get_children())
 
     # Add data to the Treeview
     for entry in organized_data:
@@ -99,11 +130,6 @@ def on_show_history():
     # Add the Treeview to the window
     history_tree.pack(fill=tk.BOTH, expand=True)
 
-
-# Create the main window
-root = tk.Tk()
-root.title("Main GUI")
-root.geometry("350x400")
 
 # Texts
 font = ("Helvetica", 18)
@@ -124,7 +150,7 @@ living_room_off_button = tk.Button(
 kitchen_on_button = tk.Button(root, text="ON", width=8, command=on_kitchen_on)
 kitchen_off_button = tk.Button(root, text="OFF", width=8, command=on_kitchen_off)
 
-history_button = tk.Button(root, text="SHOW", width=12, command=on_show_history)
+history_button = tk.Button(root, text="SHOW", width=12, command=create_history_window)
 
 # State containers
 alarm_state = tk.Label(root, text="Disarmed", bg="red", fg="white", font=font)
